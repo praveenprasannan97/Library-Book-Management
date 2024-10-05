@@ -112,6 +112,7 @@ def api_add_author(request, id):
         serializer = AuthorSerializer(author)
         return Response(serializer.data)
     elif request.method == 'PUT':
+        author = Author.objects.get(id=id)
         serializer = AuthorSerializer(author, data=request.data)
         if serializer.is_valid():
             serializer.save()
