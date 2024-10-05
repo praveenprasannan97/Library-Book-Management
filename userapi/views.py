@@ -7,8 +7,9 @@ from rest_framework.authtoken.models import Token
 from rest_framework import status, exceptions, authentication
 from rest_framework.response import Response
 from django.contrib.auth import authenticate
-from django.contrib.auth.models import User
-from .serializers import UserSerializer
+from django.contrib.auth.models import User, Group
+from .serializers import UserSerializer, AuthorSerializer
+from .models import Author
 
 
 
@@ -19,21 +20,42 @@ from .serializers import UserSerializer
 @permission_classes([AllowAny])
 def api_signup(request):
 
-    serializer = UserSerializer(data=request.data)
+    is_staff = request.data.get('is_staff', False)
 
-    if serializer.is_valid():
-
-        user_data = serializer.validated_data
-
-
-        user = serializer.save()
-        user.password = make_password(user_data['password'])
-        user.is_staff = False
-        user.save()
-        
-        return Response({'message': 'New Account Created'}, status=status.HTTP_201_CREATED)
+    if is_staff:
+        if request.user.is_staff:
+            serializer = UserSerializer(data=request.data)
+            if serializer.is_valid():
+                user_data = serializer.validated_data
+                user = serializer.save()
+                user.password = make_password(user_data['password'])
+                user.is_staff = True
+                admin_group, created = Group.objects.get_or_create(name='admin')
+                user.groups.add(admin_group)
+                user.save()
+                return Response({'message': 'New Account Created'}, status=status.HTTP_201_CREATED)
+            else:
+                return Response({'error': 'Invalid data', 'details': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(
+                {'error': 'Permission denied. Only staff members can create admin accounts.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
     else:
-        return Response({'error': 'Invalid data', 'details': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            user_data = serializer.validated_data
+
+            user = serializer.save()
+            user.password = make_password(user_data['password'])
+            user.is_staff = False
+
+            user_group, created = Group.objects.get_or_create(name='user')
+            user.groups.add(user_group)
+            user.save()
+            return Response({'message': 'New Account Created'}, status=status.HTTP_201_CREATED)
+        else:
+            return Response({'error': 'Invalid data', 'details': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @csrf_exempt
@@ -52,3 +74,57 @@ def api_login(request):
     
     token, _ = Token.objects.get_or_create(user=user)
     return Response({'token': token.key},status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def api_logout(request):
+
+    user = request.user
+    token = Token.objects.get(user=user)
+    token.delete()
+    return Response(status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def api_home(request):
+
+    user = request.user
+    if user.groups.filter(name='admin').exists():
+        print("User is an admin")
+    return Response(status=status.HTTP_200_OK)
+
+
+@api_view(['DELETE','POST','PUT', 'GET'])
+@permission_classes([IsAuthenticated])
+def api_add_author(request, id):
+    
+    user = request.user
+    if request.method == 'POST':
+        if user.groups.filter(name='admin').exists():
+            serializer = AuthorSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'GET':
+        author = Author.objects.get(id=id)
+        serializer = AuthorSerializer(author)
+        return Response(serializer.data)
+    elif request.method == 'PUT':
+        serializer = AuthorSerializer(author, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'DELETE':
+        author = Author.objects.get(id=id)
+        author.delete()
+        return Response({'message': 'Author deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+    
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def api_list_authors(request):
+    authors = Author.objects.all()
+    serializer = AuthorSerializer(authors, many=True)
+    return Response(serializer.data)
