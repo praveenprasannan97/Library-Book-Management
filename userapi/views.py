@@ -8,7 +8,7 @@ from rest_framework import status, exceptions, authentication
 from rest_framework.response import Response
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User, Group
-from .serializers import UserSerializer, AuthorSerializer
+from .serializers import UserSerializer, AuthorSerializer, AuthorSerializer2
 from .models import Author
 
 
@@ -126,5 +126,5 @@ def api_add_author(request, id):
 @permission_classes([IsAuthenticated])
 def api_list_authors(request):
     authors = Author.objects.all()
-    serializer = AuthorSerializer(authors, many=True)
+    serializer = AuthorSerializer2(authors, many=True)
     return Response(serializer.data)
