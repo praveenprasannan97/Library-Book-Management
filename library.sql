@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 05, 2024 at 06:24 PM
+-- Generation Time: Oct 07, 2024 at 11:31 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -38,7 +38,8 @@ CREATE TABLE `authtoken_token` (
 --
 
 INSERT INTO `authtoken_token` (`key`, `created`, `user_id`) VALUES
-('d06c9557e00aacd3d1c989ab92c42742a3688276', '2024-10-05 15:03:53.255489', 8);
+('0a66086adf47bbd1029f9914421b10519cf545b5', '2024-10-07 07:20:04.602231', 8),
+('84bafbbf6b9c27791829c902eb3467e166f45cd1', '2024-10-07 09:24:47.315038', 9);
 
 -- --------------------------------------------------------
 
@@ -70,6 +71,29 @@ CREATE TABLE `auth_group_permissions` (
   `group_id` int(11) NOT NULL,
   `permission_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `auth_group_permissions`
+--
+
+INSERT INTO `auth_group_permissions` (`id`, `group_id`, `permission_id`) VALUES
+(12, 1, 48),
+(13, 1, 52),
+(14, 1, 53),
+(15, 1, 54),
+(16, 1, 55),
+(1, 2, 45),
+(2, 2, 46),
+(3, 2, 47),
+(4, 2, 48),
+(5, 2, 49),
+(6, 2, 50),
+(7, 2, 51),
+(8, 2, 52),
+(9, 2, 53),
+(10, 2, 54),
+(11, 2, 55),
+(17, 2, 56);
 
 -- --------------------------------------------------------
 
@@ -132,7 +156,19 @@ INSERT INTO `auth_permission` (`id`, `name`, `content_type_id`, `codename`) VALU
 (41, 'Can add borrowing history', 11, 'add_borrowinghistory'),
 (42, 'Can change borrowing history', 11, 'change_borrowinghistory'),
 (43, 'Can delete borrowing history', 11, 'delete_borrowinghistory'),
-(44, 'Can view borrowing history', 11, 'view_borrowinghistory');
+(44, 'Can view borrowing history', 11, 'view_borrowinghistory'),
+(45, 'Can add author', 10, 'can_add_author'),
+(46, 'Can edit author', 10, 'can_edit_author'),
+(47, 'Can delete author', 10, 'can_delete_author'),
+(48, 'Can list book', 9, 'can_list_book'),
+(49, 'Can add book', 9, 'can_add_book'),
+(50, 'Can edit book', 9, 'can_edit_book'),
+(51, 'Can delete book', 9, 'can_delete_book'),
+(52, 'Can borrow book', 9, 'can_borrow_book'),
+(53, 'Can return book', 9, 'can_return_book'),
+(54, 'Can view History', 11, 'can_view_history'),
+(55, 'Can edit History', 11, 'can_edit_history'),
+(56, 'Can list author', 10, 'can_list_author');
 
 -- --------------------------------------------------------
 
@@ -159,7 +195,7 @@ CREATE TABLE `auth_user` (
 --
 
 INSERT INTO `auth_user` (`id`, `password`, `last_login`, `is_superuser`, `username`, `first_name`, `last_name`, `email`, `is_staff`, `is_active`, `date_joined`) VALUES
-(8, 'pbkdf2_sha256$720000$qStoBJJK1tZwr6VXbPaVzd$L8H8RW/OrmqcO7OHLx7ZA/RgrTeSbaRki12CyyMJa3g=', NULL, 0, 'asha', '', '', 'asfghhb@gvghv.com', 1, 1, '2024-10-05 14:45:12.803257'),
+(8, 'pbkdf2_sha256$720000$qStoBJJK1tZwr6VXbPaVzd$L8H8RW/OrmqcO7OHLx7ZA/RgrTeSbaRki12CyyMJa3g=', NULL, 0, 'asha', '', '', 'asha@gmail.com', 1, 1, '2024-10-05 14:45:12.803257'),
 (9, 'pbkdf2_sha256$720000$FQK3BzjqO3Hp1HpKFZb5tr$bgICY3/5dRR9FQ9Nb+ikTEpvekAmyRAmnHuX3LlkcQw=', NULL, 0, 'prasannan', '', '', 'prasannan@gmail.com', 0, 1, '2024-10-05 16:24:11.174642');
 
 -- --------------------------------------------------------
@@ -179,9 +215,6 @@ CREATE TABLE `auth_user_groups` (
 --
 
 INSERT INTO `auth_user_groups` (`id`, `user_id`, `group_id`) VALUES
-(1, 5, 1),
-(2, 6, 1),
-(3, 7, 2),
 (4, 8, 2),
 (5, 9, 1);
 
@@ -283,7 +316,9 @@ INSERT INTO `django_migrations` (`id`, `app`, `name`, `applied`) VALUES
 (20, 'authtoken', '0003_tokenproxy', '2024-10-05 11:00:39.483932'),
 (21, 'authtoken', '0004_alter_tokenproxy_options', '2024-10-05 11:00:39.487018'),
 (22, 'sessions', '0001_initial', '2024-10-05 11:00:39.505045'),
-(23, 'userapi', '0001_initial', '2024-10-05 13:44:07.614220');
+(23, 'userapi', '0001_initial', '2024-10-05 13:44:07.614220'),
+(24, 'userapi', '0002_alter_author_options_alter_book_options_and_more', '2024-10-07 04:54:47.594863'),
+(25, 'userapi', '0003_alter_author_options', '2024-10-07 05:15:25.341838');
 
 -- --------------------------------------------------------
 
@@ -316,7 +351,7 @@ CREATE TABLE `userapi_author` (
 
 INSERT INTO `userapi_author` (`id`, `name`, `date_of_birth`, `country`) VALUES
 (1, 'jkr', '1979-10-17', 'UK'),
-(2, 'hghg', '2024-10-09', 'india');
+(4, 'name', '2024-02-20', 'ggg');
 
 -- --------------------------------------------------------
 
@@ -333,6 +368,16 @@ CREATE TABLE `userapi_book` (
   `status` varchar(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `userapi_book`
+--
+
+INSERT INTO `userapi_book` (`id`, `title`, `ISBN`, `publication_date`, `copies_available`, `status`) VALUES
+(4, 'Harry Potter 1', '1233445565', '1999-01-03', 7, 'available'),
+(5, 'Harry Potter 2', '12398754', '1999-11-09', 111, 'available'),
+(6, 'Harry Potter 3', '12867767', '2000-03-23', 14, 'available'),
+(7, 'hp', '145223', '2024-10-01', 0, 'available');
+
 -- --------------------------------------------------------
 
 --
@@ -344,6 +389,16 @@ CREATE TABLE `userapi_book_authors` (
   `book_id` bigint(20) NOT NULL,
   `author_id` bigint(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `userapi_book_authors`
+--
+
+INSERT INTO `userapi_book_authors` (`id`, `book_id`, `author_id`) VALUES
+(5, 4, 1),
+(6, 5, 1),
+(7, 6, 1),
+(8, 7, 1);
 
 -- --------------------------------------------------------
 
@@ -359,6 +414,15 @@ CREATE TABLE `userapi_borrowinghistory` (
   `book_id` bigint(20) NOT NULL,
   `user_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `userapi_borrowinghistory`
+--
+
+INSERT INTO `userapi_borrowinghistory` (`id`, `borrow_date`, `return_date`, `status`, `book_id`, `user_id`) VALUES
+(1, '2024-10-07', NULL, 'borrowed', 4, 9),
+(2, '2024-10-07', NULL, 'borrowed', 6, 9),
+(3, '2024-10-07', NULL, 'borrowed', 5, 9);
 
 --
 -- Indexes for dumped tables
@@ -487,13 +551,13 @@ ALTER TABLE `auth_group`
 -- AUTO_INCREMENT for table `auth_group_permissions`
 --
 ALTER TABLE `auth_group_permissions`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT for table `auth_permission`
 --
 ALTER TABLE `auth_permission`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=57;
 
 --
 -- AUTO_INCREMENT for table `auth_user`
@@ -529,31 +593,31 @@ ALTER TABLE `django_content_type`
 -- AUTO_INCREMENT for table `django_migrations`
 --
 ALTER TABLE `django_migrations`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT for table `userapi_author`
 --
 ALTER TABLE `userapi_author`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `userapi_book`
 --
 ALTER TABLE `userapi_book`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `userapi_book_authors`
 --
 ALTER TABLE `userapi_book_authors`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `userapi_borrowinghistory`
 --
 ALTER TABLE `userapi_borrowinghistory`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Constraints for dumped tables
@@ -579,39 +643,11 @@ ALTER TABLE `auth_permission`
   ADD CONSTRAINT `auth_permission_content_type_id_2f476e4b_fk_django_co` FOREIGN KEY (`content_type_id`) REFERENCES `django_content_type` (`id`);
 
 --
--- Constraints for table `auth_user_groups`
---
-ALTER TABLE `auth_user_groups`
-  ADD CONSTRAINT `auth_user_groups_group_id_97559544_fk_auth_group_id` FOREIGN KEY (`group_id`) REFERENCES `auth_group` (`id`),
-  ADD CONSTRAINT `auth_user_groups_user_id_6a12ed8b_fk_auth_user_id` FOREIGN KEY (`user_id`) REFERENCES `auth_user` (`id`);
-
---
 -- Constraints for table `auth_user_user_permissions`
 --
 ALTER TABLE `auth_user_user_permissions`
   ADD CONSTRAINT `auth_user_user_permi_permission_id_1fbb5f2c_fk_auth_perm` FOREIGN KEY (`permission_id`) REFERENCES `auth_permission` (`id`),
   ADD CONSTRAINT `auth_user_user_permissions_user_id_a95ead1b_fk_auth_user_id` FOREIGN KEY (`user_id`) REFERENCES `auth_user` (`id`);
-
---
--- Constraints for table `django_admin_log`
---
-ALTER TABLE `django_admin_log`
-  ADD CONSTRAINT `django_admin_log_content_type_id_c4bce8eb_fk_django_co` FOREIGN KEY (`content_type_id`) REFERENCES `django_content_type` (`id`),
-  ADD CONSTRAINT `django_admin_log_user_id_c564eba6_fk_auth_user_id` FOREIGN KEY (`user_id`) REFERENCES `auth_user` (`id`);
-
---
--- Constraints for table `userapi_book_authors`
---
-ALTER TABLE `userapi_book_authors`
-  ADD CONSTRAINT `userapi_book_authors_author_id_a46ba636_fk_userapi_author_id` FOREIGN KEY (`author_id`) REFERENCES `userapi_author` (`id`),
-  ADD CONSTRAINT `userapi_book_authors_book_id_7cc0706e_fk_userapi_book_id` FOREIGN KEY (`book_id`) REFERENCES `userapi_book` (`id`);
-
---
--- Constraints for table `userapi_borrowinghistory`
---
-ALTER TABLE `userapi_borrowinghistory`
-  ADD CONSTRAINT `userapi_borrowinghistory_book_id_52b5e133_fk_userapi_book_id` FOREIGN KEY (`book_id`) REFERENCES `userapi_book` (`id`),
-  ADD CONSTRAINT `userapi_borrowinghistory_user_id_3e557908_fk_auth_user_id` FOREIGN KEY (`user_id`) REFERENCES `auth_user` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

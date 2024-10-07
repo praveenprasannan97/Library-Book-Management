@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Author, Book
+from .models import Author, Book, BorrowingHistory
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -50,3 +50,19 @@ class BookSerializer2(serializers.ModelSerializer):
     class Meta:
         model = Book
         fields = ['id','title', 'ISBN', 'authors', 'publication_date', 'copies_available', 'status']
+
+
+class BorrowingHistorySerializer(serializers.ModelSerializer):
+    book = BookSerializer()
+
+    class Meta:
+        model = BorrowingHistory
+        fields = ['id', 'book', 'borrow_date', 'return_date', 'status']
+
+class BorrowingHistorySerializer2(serializers.ModelSerializer):
+    book = BookSerializer()
+    user = UserSerializer()
+
+    class Meta:
+        model = BorrowingHistory
+        fields = ['id', 'book', 'user', 'borrow_date', 'status', 'return_date']

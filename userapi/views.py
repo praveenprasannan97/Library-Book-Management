@@ -1,3 +1,4 @@
+from django.utils import timezone
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -8,8 +9,8 @@ from rest_framework import status, exceptions, authentication
 from rest_framework.response import Response
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User, Group
-from .serializers import UserSerializer, AuthorSerializer, AuthorSerializer2, BookSerializer, BookSerializer2
-from .models import Author, Book
+from .serializers import UserSerializer, AuthorSerializer, AuthorSerializer2, BookSerializer, BookSerializer2, BorrowingHistorySerializer, BorrowingHistorySerializer2
+from .models import Author, Book, BorrowingHistory
 
 
 
@@ -199,5 +200,70 @@ def api_list_books(request):
         books = Book.objects.all()
         serializer = BookSerializer2(books, many=True)
         return Response(serializer.data)
+    else:
+        return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
+    
+@api_view(['PATCH'])
+@permission_classes([IsAuthenticated])
+def api_borrow_book(request, id):
+    user = request.user
+    book = get_object_or_404(Book, id=id)
+    if request.user.has_perm('userapi.can_borrow_book'):
+        if book.copies_available > 0:
+            book.copies_available -= 1
+            if book.copies_available == 0:
+                book.status = 'borrowed'
+            book.save()
+
+            BorrowingHistory.objects.create(
+                book=book,
+                user=user,
+                borrow_date=timezone.now(),
+                status='borrowed'
+            )
+
+            return Response({'message': 'Book borrowed successfully', 'book': book.title}, status=status.HTTP_200_OK)
+        
+        return Response({'error': 'No copies available'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def api_my_borrowing(request):
+    user = request.user
+    if request.user.has_perm('userapi.can_view_history'):
+        borrow_history = BorrowingHistory.objects.filter(user=user)
+        serializer = BorrowingHistorySerializer(borrow_history, many=True)
+        return Response(serializer.data)
+
+
+@api_view(['PATCH'])
+@permission_classes([IsAuthenticated])
+def api_return_book(request, id):
+    user = request.user
+    borrow_entry = get_object_or_404(BorrowingHistory, book_id=id, user=user, status='borrowed')
+    book = borrow_entry.book
+    
+    if request.user.has_perm('userapi.can_return_book'):
+        book.copies_available += 1
+        book.status = 'available'
+        book.save()
+
+        borrow_entry.return_date = timezone.now()
+        borrow_entry.status = 'returned'
+        borrow_entry.save()
+
+        return Response({'message': 'Book returned successfully', 'book': book.title}, status=status.HTTP_200_OK)
+
+    return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def api_borrowing_history(request):
+    if request.user.has_perm('userapi.can_view_history'):
+        borrowing_history = BorrowingHistory.objects.all()
+        serializer = BorrowingHistorySerializer2(borrowing_history, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     else:
         return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
