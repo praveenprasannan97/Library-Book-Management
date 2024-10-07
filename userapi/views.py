@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.contrib.auth.hashers import make_password
@@ -8,8 +8,8 @@ from rest_framework import status, exceptions, authentication
 from rest_framework.response import Response
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User, Group
-from .serializers import UserSerializer, AuthorSerializer, AuthorSerializer2
-from .models import Author
+from .serializers import UserSerializer, AuthorSerializer, AuthorSerializer2, BookSerializer, BookSerializer2
+from .models import Author, Book
 
 
 
@@ -99,7 +99,6 @@ def api_home(request):
 @permission_classes([IsAuthenticated])
 def api_add_author(request, id):
     
-    user = request.user
     if request.method == 'POST':
         if request.user.has_perm('userapi.can_add_author'):
             serializer = AuthorSerializer(data=request.data)
@@ -107,11 +106,15 @@ def api_add_author(request, id):
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
     elif request.method == 'GET':
         if request.user.has_perm('userapi.can_list_author'):
             author = Author.objects.get(id=id)
             serializer = AuthorSerializer(author)
             return Response(serializer.data)
+        else:
+            return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
     elif request.method == 'PUT':
         if request.user.has_perm('userapi.can_edit_author'):
             author = Author.objects.get(id=id)
@@ -120,11 +123,15 @@ def api_add_author(request, id):
                 serializer.save()
                 return Response(serializer.data)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
     elif request.method == 'DELETE':
         if request.user.has_perm('userapi.can_delete_author'):
             author = Author.objects.get(id=id)
             author.delete()
             return Response({'message': 'Author deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
     
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -133,6 +140,8 @@ def api_list_authors(request):
         authors = Author.objects.all()
         serializer = AuthorSerializer2(authors, many=True)
         return Response(serializer.data)
+    else:
+        return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -145,3 +154,50 @@ def api_profile(request):
         'group': groups[0] if groups else 'No group'
     }
     return Response(profile_data, status=status.HTTP_200_OK)
+
+@api_view(['DELETE','POST','PUT', 'GET'])
+@permission_classes([IsAuthenticated])
+def api_books(request, id):
+    if request.method == 'POST':
+        if request.user.has_perm('userapi.can_add_book'):
+            serializer = BookSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
+    if request.method == 'DELETE':
+        if request.user.has_perm('userapi.can_delete_book'):
+            book = get_object_or_404(Book, id=id)
+            book.delete()
+            return Response({'message': 'Book deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
+    if request.method == 'GET':
+        if request.user.has_perm('userapi.can_list_book'):
+            book = get_object_or_404(Book, id=id)
+            serializer = BookSerializer2(book)
+            return Response(serializer.data)
+        else:
+            return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
+    if request.method == 'PUT':
+        if request.user.has_perm('userapi.can_edit_book'):
+            book = get_object_or_404(Book, id=id)
+            serializer = BookSerializer(book, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def api_list_books(request):
+    if request.user.has_perm('userapi.can_list_book'):
+        books = Book.objects.all()
+        serializer = BookSerializer2(books, many=True)
+        return Response(serializer.data)
+    else:
+        return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)

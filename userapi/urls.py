@@ -9,4 +9,6 @@ urlpatterns = [
     path('authors/<int:id>/', views.api_add_author, name='api_add_author'),
     path('listauthors/', views.api_list_authors, name='api_list_authors'),
     path('profile/', views.api_profile, name='api_profile'),
+    path('books/<int:id>/', views.api_books, name='api_books'),
+    path('bookslist/', views.api_list_books, name='api_list_books'),
 ]
