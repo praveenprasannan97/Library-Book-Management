@@ -241,7 +241,7 @@ def api_my_borrowing(request):
 @permission_classes([IsAuthenticated])
 def api_return_book(request, id):
     user = request.user
-    borrow_entry = get_object_or_404(BorrowingHistory, book_id=id, user=user, status='borrowed')
+    borrow_entry = get_object_or_404(BorrowingHistory, id=id, user=user, status='borrowed')
     book = borrow_entry.book
     
     if request.user.has_perm('userapi.can_return_book'):
