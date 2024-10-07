@@ -101,34 +101,38 @@ def api_add_author(request, id):
     
     user = request.user
     if request.method == 'POST':
-        if user.groups.filter(name='admin').exists():
+        if request.user.has_perm('userapi.can_add_author'):
             serializer = AuthorSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'GET':
-        author = Author.objects.get(id=id)
-        serializer = AuthorSerializer(author)
-        return Response(serializer.data)
-    elif request.method == 'PUT':
-        author = Author.objects.get(id=id)
-        serializer = AuthorSerializer(author, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
+        if request.user.has_perm('userapi.can_list_author'):
+            author = Author.objects.get(id=id)
+            serializer = AuthorSerializer(author)
             return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'PUT':
+        if request.user.has_perm('userapi.can_edit_author'):
+            author = Author.objects.get(id=id)
+            serializer = AuthorSerializer(author, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'DELETE':
-        author = Author.objects.get(id=id)
-        author.delete()
-        return Response({'message': 'Author deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+        if request.user.has_perm('userapi.can_delete_author'):
+            author = Author.objects.get(id=id)
+            author.delete()
+            return Response({'message': 'Author deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
     
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def api_list_authors(request):
-    authors = Author.objects.all()
-    serializer = AuthorSerializer2(authors, many=True)
-    return Response(serializer.data)
+    if request.user.has_perm('userapi.can_list_author'):
+        authors = Author.objects.all()
+        serializer = AuthorSerializer2(authors, many=True)
+        return Response(serializer.data)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
