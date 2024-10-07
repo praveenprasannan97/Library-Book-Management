@@ -129,3 +129,15 @@ def api_list_authors(request):
     authors = Author.objects.all()
     serializer = AuthorSerializer2(authors, many=True)
     return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def api_profile(request):
+    user = request.user
+    groups = user.groups.values_list('name', flat=True)
+    profile_data = {
+        'username': user.username,
+        'email': user.email,
+        'group': groups[0] if groups else 'No group'
+    }
+    return Response(profile_data, status=status.HTTP_200_OK)
