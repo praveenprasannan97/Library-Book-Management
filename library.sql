@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 07, 2024 at 11:31 AM
+-- Generation Time: Oct 07, 2024 at 12:03 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -373,9 +373,9 @@ CREATE TABLE `userapi_book` (
 --
 
 INSERT INTO `userapi_book` (`id`, `title`, `ISBN`, `publication_date`, `copies_available`, `status`) VALUES
-(4, 'Harry Potter 1', '1233445565', '1999-01-03', 7, 'available'),
-(5, 'Harry Potter 2', '12398754', '1999-11-09', 111, 'available'),
-(6, 'Harry Potter 3', '12867767', '2000-03-23', 14, 'available'),
+(4, 'Harry Potter 1', '1233445565', '1999-01-03', 8, 'available'),
+(5, 'Harry Potter 2', '12398754', '1999-11-09', 110, 'available'),
+(6, 'Harry Potter 3', '12867767', '2000-03-23', 15, 'available'),
 (7, 'hp', '145223', '2024-10-01', 0, 'available');
 
 -- --------------------------------------------------------
@@ -420,9 +420,10 @@ CREATE TABLE `userapi_borrowinghistory` (
 --
 
 INSERT INTO `userapi_borrowinghistory` (`id`, `borrow_date`, `return_date`, `status`, `book_id`, `user_id`) VALUES
-(1, '2024-10-07', NULL, 'borrowed', 4, 9),
-(2, '2024-10-07', NULL, 'borrowed', 6, 9),
-(3, '2024-10-07', NULL, 'borrowed', 5, 9);
+(1, '2024-10-07', '2024-10-07', 'returned', 4, 9),
+(2, '2024-10-07', '2024-10-07', 'returned', 6, 9),
+(3, '2024-10-07', NULL, 'borrowed', 5, 9),
+(4, '2024-10-07', NULL, 'borrowed', 5, 9);
 
 --
 -- Indexes for dumped tables
@@ -617,7 +618,7 @@ ALTER TABLE `userapi_book_authors`
 -- AUTO_INCREMENT for table `userapi_borrowinghistory`
 --
 ALTER TABLE `userapi_borrowinghistory`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Constraints for dumped tables
