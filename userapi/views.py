@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User, Group
 from .serializers import UserSerializer, AuthorSerializer, AuthorSerializer2, BookSerializer, BookSerializer2, BorrowingHistorySerializer, BorrowingHistorySerializer2
-from .models import Author, Book, BorrowingHistory
+from .models import Author, Book, BorrowingHistory, BooksReviews
 
 
 
@@ -267,3 +267,25 @@ def api_borrowing_history(request):
         return Response(serializer.data, status=status.HTTP_200_OK)
     else:
         return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
+    
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def api_book_review(request):
+    user = request.user
+    book_id = request.data.get('book_id')
+    book_review = request.data.get('book_review')
+    book_rating = request.data.get('book_rating')
+    book = get_object_or_404(Book, id=book_id)
+
+    #borrow_history = get_object_or_404(BorrowingHistory, book=book_id, user=user, status='returned')
+    if BorrowingHistory.objects.filter(book=book_id, user=user, status='returned').exists():
+        BooksReviews.objects.create(
+            user_name = user,
+            book_name = book,
+            book_review = book_review,
+            book_rating = book_rating
+        )
+
+        return Response(status=status.HTTP_200_OK)
+    else :
+        return Response(status=status.HTTP_404_NOT_FOUND)

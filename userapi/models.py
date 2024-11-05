@@ -54,3 +54,9 @@ class BorrowingHistory(models.Model):
 
     def __str__(self):
         return f'{self.user} borrowed {self.book}'
+    
+class BooksReviews(models.Model):
+    book_name = models.ForeignKey(Book, on_delete=models.CASCADE)
+    user_name = models.ForeignKey(User, on_delete=models.CASCADE)
+    book_review = models.CharField(max_length=200)
+    book_rating = models.IntegerField(default=0)
